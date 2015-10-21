@@ -67,7 +67,22 @@
     // NOTE Make sure to set element content before getting its client rect!
     DEBUG_ADDON &&
       console.log(div.getBoundingClientRect());
-    div.addEventListener('click', listener);
+    div.addEventListener('click', listener || function (event) {
+        // console.log("selection", window.getSelection().toString());
+        event.preventDefault();
+        event.stopPropagation();
+        // if (this.children[0].style.display == 'none') {
+        //   this.children[0].style.display = 'inline-block';
+        // }
+        // else {
+        //   this.children[0].style.display = 'none';
+        if (this.firstElementChild.style.display == 'none') {
+          this.firstElementChild.style.display = 'inline-block';
+        }
+        else {
+          this.firstElementChild.style.display = 'none';
+        }
+      });
     let constrainClosestEdges = function(bcr) {
       let props = {};
       if (bcr.left + bcr.width / 2 > window.innerWidth / 2) {
@@ -82,7 +97,19 @@
       else {
         props.top = bcr.top;
       }
-      // reportError({bcr: bcr, props: props});
+	// reportError({bcr: bcr, props: props});
+	let updateStyle = function(element, props) {
+	    let keys = Object.keys(props);
+	    element.style.bottom = '';
+	    element.style.left = '';
+	    element.style.right = '';
+	    element.style.top = '';
+	    keys.forEach(function(prop) {
+		element.style[prop] = props[prop] + 'px';
+	    });
+	};
+	updateStyle(div, props);
+	updateStyle(div.firstElementChild, props);
       return props;
     };
     // NOTE: See 
