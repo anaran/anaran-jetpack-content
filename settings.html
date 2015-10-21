@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+        <head>
+                <meta charset="utf-8">
+                <title data-l10n-id="settings_title">Settings</title>
+                <meta name="description" content="Description of Add-on Settings">
+                <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+                <link rel="icon" href="icon48.png" id="favicon" type="image/png">
+                <link rel="stylesheet" href="settings.css">
+                <!--                 <script src="my-utils.js"></script> -->
+        </head>
+        <body role="application">
+                <h1 data-l10n-id="settings_title">Settings</h1>
+                <a data-l10n-id="help_menu_entry" href="HELP.html"></a>
+                <a data-l10n-id="known_origins" href="known-origins.js"></a>
+                <p data-l10n-id="addon_description">DESCRIPTION</p>
+                <!-- Taken from https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/simple-prefs -->
+                <!-- tt = document.querySelectorAll('h4#Preference_Types~table.standard-table tr') -->
+                <!-- Array.prototype.forEach.call(tt, function(v, i, obj) { console.log(v.firstElementChild.textContent); }); -->
+                <!-- undefined -->
+                <!-- Type -->
+                <!-- bool -->
+                <!-- boolint -->
+                <!-- integer -->
+                <!-- string -->
+                <!-- color -->
+                <!-- file -->
+                <!-- directory -->
+                <!-- menulist -->
+                <!-- radio -->
+                <!-- control -->
+                <template class="bool">
+                        <div class="bool settings">
+                                <label data-l10n-id="added by setting.js">TITLE
+                                </label>
+                                <input class="bool" name="PREF_NAME" type="checkbox"/>
+                                <p data-l10n-id="added by setting.js">DESCRIPTION</p>
+                        </div>
+                </template>
+                <template class="boolint">
+                        <input class="boolint" name="PREF_NAME" type="checkbox"/>
+                </template>
+                <template class="integer">
+                        <input class="integer" name="PREF_NAME" type="number" step="1"/>
+                </template>
+                <template class="string">
+                        <div class="string settings">
+                                <label>TITLE
+                                </label>
+                                <pre class="string" name="PREF_NAME" contentEditable></pre>
+                                <p>DESCRIPTION</p>
+                        </div>
+                </template>
+                <template class="color">
+                        <input class="color" name="PREF_NAME" type="color"/>
+                </template>
+                <template class="file">
+                        <input class="file" name="PREF_NAME" type="file"/>
+                </template>
+                <template class="directory">
+                        <input class="directory" name="PREF_NAME" type="directory"/>
+                </template>
+                <template class="menulist">
+                        <div class="menulist settings">
+                                <label>TITLE
+                                </label>
+                                <select class="menulist"></select>
+                                <p>DESCRIPTION</p>
+                        </div>
+                </template>
+                <template class="menulist_item">
+                        <option class="menulist_item"></option>
+                </template>
+                <template class="radio">
+                        <div class="radio settings">
+                                <label>TITLE</label>
+                                <span class="radio"></span>
+                                <p>DESCRIPTION</p>
+                        </div>
+                </template>
+                <template class="radio_item">
+                        <input class="radio_item" id="PREF_NAME" name="PREF_NAME" type="radio"/>
+                        <label for="PREF_NAME" class="radio">TITLE</label>
+                </template>
+                <template class="control">
+                        <div class="control settings">
+                                <label>TITLE</label>
+                                <input class="control" name="PREF_NAME" type="button"/>
+                                <p>DESCRIPTION</p>
+                        </div>
+                </template>
+                <template id="entry_template">
+                        <div class="entry" id="COUCHDB DOC ID">
+                                <pre class="start"></pre>
+                                <pre class="end"></pre>
+                                <pre class="duration"></pre>
+                                <pre class="revisions"></pre>
+                                <pre class="activity"></pre>
+                        </div>
+                </template>
+
+                <template id="entries_template">
+                        <div class="entries" id="QUERY RESULT ID">
+                                <div class="entries_header">
+                                        <a class="add">&plus;</a>
+                                        <!-- See https://bugzil.la/1204458 -->
+                                        <a class="close">&cross;</a>
+                                        <a class="update">&circlearrowright;</a>
+                                        <span>query</span>
+                                        <select name="query_type" label="type">
+                                                <option>by activity</option>
+                                                <option>by time</option>
+                                                <option>deleted</option>
+                                        </select>
+                                        <select name="query_order">
+                                                <option>descending</option>
+                                                <option>ascending</option>
+                                        </select>
+                                        <span class="info">result header</span>
+                                </div>
+                        </div>
+                </template>
+        </body>
+</html>
