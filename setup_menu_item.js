@@ -1,11 +1,11 @@
 (function () {
-  function setupMenu(div, data) {
+  function setupMenu(div, data, opacity) {
     var menu = div.appendChild(document.createElement('div'));
     menu.style.position = 'fixed';
     menu.className = 'menu';
     menu.style.display = 'none';
-    menu.style.opacity = 0.7;
-    // menu.style.backgroundColor = (efpBC == 'transparent' ? bodyBC : efpBC);
+    menu.style.opacity = opacity || 0.8;
+    menu.style.backgroundColor = div.style.backgroundColor;
     menu.style.borderRadius = '3px';
     menu.style.borderColor = menu.style.color;
     menu.style.border = '2px solid';
@@ -24,6 +24,7 @@
   function setupMenuItem(menu, href, text, listener) {
     let item = menu.appendChild(document.createElement('div')).appendChild(document.createElement('a'));
     item.style.display = 'inline-block';
+    // item.style.marginInlineStart = '1rem';
     item.textContent = text;
     item.href = href;
     item.addEventListener('click', listener || function (event) {
