@@ -21,6 +21,10 @@
     return json;
   };
   (typeof self !== 'undefined') && self.port.on('load_settings', function(data) {
+    data.links.forEach(function (link) {
+      let id = document.getElementById(link.id);
+      id.href = link.href;
+    });
     Array.prototype.forEach.call(document.querySelectorAll('div.settings'), function(setting) {
       document.body.removeChild(setting);
     });
