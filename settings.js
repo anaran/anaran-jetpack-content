@@ -23,8 +23,8 @@
   (typeof self !== 'undefined') && self.port.on('load_settings', function(data) {
     if ('links' in data) {
       data.links.forEach(function (link) {
-	let id = document.getElementById(link.id);
-	id.href = link.href;
+        let id = document.getElementById(link.id);
+        id.href = link.href;
       });
     }
     Array.prototype.forEach.call(document.querySelectorAll('div.settings'), function(setting) {
@@ -58,10 +58,10 @@
         case "control": {
           element.value = prefDefinition.label;
           element.addEventListener('click', function(event) {
-              self.port.emit('save_setting', {
-                name: prefDefinition.name,
-                value: event.target.textContent
-              });
+            self.port.emit('save_setting', {
+              name: prefDefinition.name,
+              value: event.target.textContent
+            });
           });
           break;
         }
