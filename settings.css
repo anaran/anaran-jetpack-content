@@ -28,3 +28,7 @@ div.settings {
   margin: 1em;
   border-bottom: 1px solid black;
 }
+
+a.settings {
+  margin: 0.5rem;
+}

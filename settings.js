@@ -13,23 +13,37 @@
 (function() {
   let DEBUG_ADDON = false;
 
-  // self is undefined when using require in jpm test.
   let tryConvertToJson = function(text) {
     let json = text.replace(/^\s*\/\/.+\n/gm, '');
     json = json.replace(/'([^']*)'/g, '"$1"');
     json = json.replace(/([^"\/])\b(\w(\w|\d)*):/g, '$1"$2":');
     return json;
   };
+  // self is undefined when using require in jpm test.
   (typeof self !== 'undefined') && self.port.on('load_settings', function(data) {
-    if ('links' in data) {
-      data.links.forEach(function (link) {
-        let id = document.getElementById(link.id);
-        id.href = link.href;
-      });
-    }
+    let applicationDescription = document.getElementById('application_description');
+    // NOTE: Keep this first, before adding nodes to document.
     Array.prototype.forEach.call(document.querySelectorAll('div.settings'), function(setting) {
       document.body.removeChild(setting);
     });
+    if ('links' in data && applicationDescription) {
+      let linksContent = document.querySelector('template.links').content;
+      let linksDiv = document.importNode(linksContent, "deep").firstElementChild;
+      // let label = prefUI.children[0];
+      // let element = prefUI.children[1];
+      // let description = prefUI.children[2];
+      data.links.forEach(function (link) {
+        let linkContent = document.querySelector('template.link').content;
+        let linkA = document.importNode(linkContent, "deep").firstElementChild;
+        linkA.href = link.href;
+        linkA.id = link.id;
+        // Better to set textContent directly, since we have to pass the value anyway.
+        // linkA.dataL10nId = link.dataL10nId;
+        linkA.textContent = link.textContent;
+        linksDiv.appendChild(linkA);
+      });
+      document.body.insertBefore(linksDiv, applicationDescription);
+    }
     data.localizedPreferences.forEach(function (prefDefinition) {
       if (prefDefinition.hidden) {
         return;
@@ -66,19 +80,24 @@
           break;
         }
         case "string": {
+          // NOTE: We JSON.parse preferences starting with JSON and report errors.
+          let isJson = /^JSON/.test(prefDefinition.name);
           element.textContent = data.prefs[prefDefinition.name];
           // NOTE: Thanks
           // https://github.com/jrburke/gaia/commit/204a4b0c55eafbb20dfaa233fbbf2579a8f81915
           element.addEventListener('paste', function(event) {
             event.preventDefault();
-            var text = tryConvertToJson(event.clipboardData.getData('text/plain'));
+            var text = event.clipboardData.getData('text/plain');
+            if (isJson) {
+              text = tryConvertToJson(text);
+            }
             // Only insert if text. If no text, the execCommand fails with an
             // error.
             if (text) {
               document.execCommand('insertText', false, text);
             }
           });
-          element.addEventListener('blur', function(event) {
+          isJson && element.addEventListener('blur', function(event) {
             try {
               event.target.textContent = event.target.textContent.trim();
               if (event.target.textContent.length == 0) {
