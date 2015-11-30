@@ -16,7 +16,7 @@
   let tryConvertToJson = function(text) {
     let json = text.replace(/^\s*\/\/.+\n/gm, '');
     json = json.replace(/'([^']*)'/g, '"$1"');
-    json = json.replace(/([^"\/])\b(\w(\w|\d)*):/g, '$1"$2":');
+    json = json.replace(/^(\s*)(\w(\w|\d)*):/gm, '$1"$2":');
     return json;
   };
   // self is undefined when using require in jpm test.
