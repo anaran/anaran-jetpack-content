@@ -97,17 +97,19 @@
               document.execCommand('insertText', false, text);
             }
           });
-          isJson && element.addEventListener('blur', function(event) {
+          element.addEventListener('blur', function(event) {
             try {
               event.target.textContent = event.target.textContent.trim();
-              if (event.target.textContent.length == 0) {
-                event.target.textContent = "{}";
+              if (isJson) {
+                if (event.target.textContent.length == 0) {
+                  event.target.textContent = "{}";
+                }
+                // NOTE: This regexp might not catch all cases, so let's just try always
+                // if (/'|:[^\/]|^\s*\/\//.test(event.target.textContent)) {
+                event.target.textContent = tryConvertToJson(event.target.textContent);
+                // }
+                event.target.textContent = JSON.stringify(JSON.parse(event.target.textContent), null, 2);
               }
-              // NOTE: This regexp might not catch all cases, so let's just try always
-              // if (/'|:[^\/]|^\s*\/\//.test(event.target.textContent)) {
-              event.target.textContent = tryConvertToJson(event.target.textContent);
-              // }
-              event.target.textContent = JSON.stringify(JSON.parse(event.target.textContent), null, 2);
               self.port.emit('save_setting', {
                 name: prefDefinition.name,
                 value: event.target.textContent
