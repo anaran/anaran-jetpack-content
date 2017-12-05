@@ -1,4 +1,3 @@
-;
 'use strict';
 //
 // Replace /\b(const|let)\B/ with "$1 "
@@ -11,7 +10,8 @@
 // require is not available in content scripts.
 // let sp = require('sdk/simple-prefs');
 (function() {
-  let DEBUG_ADDON = false;
+  try {
+    let DEBUG_ADDON = true;
 
   let tryConvertToJson = function(text) {
     let json = text.replace(/^\s*\/\/.+\n/gm, '');
@@ -20,7 +20,8 @@
     return json;
   };
   // self is undefined when using require in jpm test.
-  (typeof self !== 'undefined') && self.port.on('load_settings', function(data) {
+    browser.runtime.onMessage.addListener((data, sender, sendResponse) => {
+      if (data.type === 'load_settings') {
     let applicationDescription = document.getElementById('application_description');
     // NOTE: Keep this first, before adding nodes to document.
     Array.prototype.forEach.call(document.querySelectorAll('div.settings'), function(setting) {
@@ -61,7 +62,8 @@
         case "bool": {
           element.checked = data.prefs[prefDefinition.name];
           element.addEventListener('change', function(event) {
-            self.port.emit('save_setting', {
+              browser.runtime.sendMessage({
+                type: 'save_setting',
               name: prefDefinition.name,
               value: event.target.checked
             });
@@ -72,7 +74,8 @@
         case "control": {
           element.value = prefDefinition.label;
           element.addEventListener('click', function(event) {
-            self.port.emit('save_setting', {
+              browser.runtime.sendMessage({
+                type: 'save_setting',
               name: prefDefinition.name,
               value: event.target.textContent
             });
@@ -110,7 +113,8 @@
                 // }
                 event.target.textContent = JSON.stringify(JSON.parse(event.target.textContent), null, 2);
               }
-              self.port.emit('save_setting', {
+                browser.runtime.sendMessage({
+                  type: 'save_setting',
                 name: prefDefinition.name,
                 value: event.target.textContent
               });
@@ -135,7 +139,8 @@
           });
           element.name = prefDefinition.name;
           element.addEventListener('change', function(event) {
-            self.port.emit('save_setting', {
+              browser.runtime.sendMessage({
+                type: 'save_setting',
               name: prefDefinition.name,
               value: event.target.value
             });
@@ -160,7 +165,8 @@
             element.appendChild(prefUI2);
           });
           element.addEventListener('change', function(event) {
-            self.port.emit('save_setting', {
+              browser.runtime.sendMessage({
+                type: 'save_setting',
               name: prefDefinition.name,
               value: event.target.value
             });
@@ -174,7 +180,18 @@
       err: data,
       indent: 2
     });
+      }
   });
   // self is undefined when using require in jpm test.
-  (typeof self !== 'undefined') && self.port.emit('request_settings');
+    browser.runtime.sendMessage({
+      type: 'request_settings'
+    }).then(res => {
+      console.log(res);
+    });
+  }
+  catch (exception) {
+    DEBUG_ADDON && console.error(exception);
+    DEBUG_ADDON && window.alert(exception.message + '\n\n' + exception.stack);
+    // handleErrors(exception);
+  }
 })();

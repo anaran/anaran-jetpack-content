@@ -27,7 +27,7 @@
     div.style.width = '48px';
     div.style.height = '48px';
     div.style.fontSize = 'large';
-    div.style.backgroundImage = 'url('+data.icon+')';
+    div.style.backgroundImage = `url('${chrome.extension.getURL(data.icon)}')`;
     div.style.borderRadius = '3px';
     div.style.borderColor = div.style.color;
     // div.style.border = '2px solid';
@@ -41,7 +41,6 @@
     if (document && 'body' in document) {
       document.body.appendChild(div);
     }
-    DEBUG_ADDON && console.error('self.options received', JSON.stringify(self.options, null, 2));
     let updateIconPosition = function(data) {
       div.style.transition = 'opacity 2s linear 0s';
       div.style.opacity = 0;
@@ -77,6 +76,8 @@
         // else {
         //   this.children[0].style.display = 'none';
         if (this.firstElementChild.style.display == 'none') {
+          this.firstElementChild.style.top = `${event.clientY}px`;
+          this.firstElementChild.style.left = `${event.clientX}px`;
           this.firstElementChild.style.display = 'inline-block';
         }
         else {
@@ -159,7 +160,7 @@
         let bcr = new DOMRect();
         bcr = this.getBoundingClientRect();
         // reportError({ 'bcr': bcr, 'drop': [ div.style.left, div.style.top ]});
-        self.port.emit(emitMessage, constrainClosestEdges(bcr));
+        // self.port.emit(emitMessage, constrainClosestEdges(bcr));
       });
     }
     if (true && "touch works on android too") {
@@ -174,7 +175,7 @@
         let bcr = new DOMRect();
         bcr = div.getBoundingClientRect();
         // reportError({ 'bcr': bcr, 'touchend': [ div.style.left, div.style.top ]});
-        self.port.emit(emitMessage, constrainClosestEdges(bcr));
+        // self.port.emit(emitMessage, constrainClosestEdges(bcr));
       });
       div.addEventListener('touchmove', function (e) {
         // if ((e.clientX - taExtensions.offsetTop) < taExtensions.offsetHeight * 0.9 || (e.clientX - taExtensions.offsetLeft) < taExtensions.offsetWidth * 0.9) {
@@ -206,14 +207,14 @@
         // Can't get this.getBoundingClientRect() to return a non-empty object.
         let bcr = new DOMRect();
         bcr = this.getBoundingClientRect();
-        self.port.emit(emitMessage, {
-          left: this.style.left,
-          right: this.style.right,
-          top: this.style.top,
-          bottom: this.style.bottom,
-          width: this.style.width,
-          height: this.style.height
-        });
+        // self.port.emit(emitMessage, {
+        //   left: this.style.left,
+        //   right: this.style.right,
+        //   top: this.style.top,
+        //   bottom: this.style.bottom,
+        //   width: this.style.width,
+        //   height: this.style.height
+        // });
         // reportError({ 'mouseup': [ div.style.left, div.style.top ]});
         // }
       });
