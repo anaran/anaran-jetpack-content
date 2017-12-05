@@ -30,7 +30,9 @@
     item.addEventListener('click', listener || function (event) {
       event.preventDefault();
       event.stopPropagation();
-      self.port.emit(href);
+      browser.runtime.sendMessage({ type: href }).then(res => {
+        console.log(res);
+      });
     });
   }
   if (typeof window !== 'undefined') {

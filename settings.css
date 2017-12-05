@@ -32,3 +32,15 @@ div.settings {
 a.settings {
   margin: 0.5rem;
 }
+
+pre {
+    min-height: 1em;
+    overflow: hidden;
+    text-overflow: ellipsis ellipsis;
+    white-space: nowrap;
+    border: 1px solid;
+}
+
+pre:focus {
+    white-space: pre-wrap;
+}
