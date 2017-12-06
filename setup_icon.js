@@ -61,7 +61,11 @@
         div.style.opacity = 0.7;
       });
     };
-    updateIconPosition(data);
+    browser.storage.local.get().then(res => {
+      updateIconPosition(res);
+    }).catch(err => {
+      console.log(err);
+    });
     // self.port.on('updateIconPosition', updateIconPosition);
     // NOTE Make sure to set element content before getting its client rect!
     DEBUG_ADDON &&
@@ -75,11 +79,21 @@
         // }
         // else {
         //   this.children[0].style.display = 'none';
-        if (this.firstElementChild.style.display == 'none') {
-          this.firstElementChild.style.top = `${event.clientY}px`;
-          this.firstElementChild.style.left = `${event.clientX}px`;
-          this.firstElementChild.style.display = 'inline-block';
+      if (this.firstElementChild.style.display == 'none') {
+        if (event.clientX > window.innerWidth / 2) {
+          this.firstElementChild.style.right = `${window.innerWidth - event.clientX}px`;
         }
+        else {
+          this.firstElementChild.style.left = `${event.clientX}px`;
+        }
+        if (event.clientY > window.innerHeight / 2) {
+          this.firstElementChild.style.bottom = `${window.innerHeight - event.clientY}px`;
+        }
+        else {
+          this.firstElementChild.style.top = `${event.clientY}px`;
+        }
+        this.firstElementChild.style.display = 'inline-block';
+      }
         else {
           this.firstElementChild.style.display = 'none';
         }
@@ -161,6 +175,13 @@
         bcr = this.getBoundingClientRect();
         // reportError({ 'bcr': bcr, 'drop': [ div.style.left, div.style.top ]});
         // self.port.emit(emitMessage, constrainClosestEdges(bcr));
+        browser.storage.local.set({
+          position: constrainClosestEdges(bcr)
+        }).then(res => {
+          console.log(res);
+        }).catch(err => {
+          console.log(err);
+        })
       });
     }
     if (true && "touch works on android too") {
@@ -176,6 +197,13 @@
         bcr = div.getBoundingClientRect();
         // reportError({ 'bcr': bcr, 'touchend': [ div.style.left, div.style.top ]});
         // self.port.emit(emitMessage, constrainClosestEdges(bcr));
+        browser.storage.local.set({
+          position: constrainClosestEdges(bcr)
+        }).then(res => {
+          console.log(res);
+        }).catch(err => {
+          console.log(err);
+        })
       });
       div.addEventListener('touchmove', function (e) {
         // if ((e.clientX - taExtensions.offsetTop) < taExtensions.offsetHeight * 0.9 || (e.clientX - taExtensions.offsetLeft) < taExtensions.offsetWidth * 0.9) {
@@ -215,6 +243,20 @@
         //   width: this.style.width,
         //   height: this.style.height
         // });
+        browser.storage.local.set({
+          position: {
+            left: this.style.left,
+            right: this.style.right,
+            top: this.style.top,
+            bottom: this.style.bottom,
+            width: this.style.width,
+            height: this.style.height
+          }
+        }).then(res => {
+          console.log(res);
+        }).catch(err => {
+          console.log(err);
+        })
         // reportError({ 'mouseup': [ div.style.left, div.style.top ]});
         // }
       });

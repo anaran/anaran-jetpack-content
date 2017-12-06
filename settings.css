@@ -33,7 +33,7 @@ a.settings {
   margin: 0.5rem;
 }
 
-pre {
+.settings pre.string {
     min-height: 1em;
     overflow: hidden;
     text-overflow: ellipsis ellipsis;
@@ -41,6 +41,6 @@ pre {
     border: 1px solid;
 }
 
-pre:focus {
+.settings pre.string:focus {
     white-space: pre-wrap;
 }
