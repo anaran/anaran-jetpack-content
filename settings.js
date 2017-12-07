@@ -10,7 +10,7 @@
 // require is not available in content scripts.
 // let sp = require('sdk/simple-prefs');
 (function() {
-  let DEBUG_ADDON = true;
+  const DEBUG_ADDON = false;
   try {
     // Save settings in memory if browser.storage.local.set
     // turns out to be slow.

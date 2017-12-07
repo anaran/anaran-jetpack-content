@@ -1,4 +1,6 @@
+'use strict';
 (function () {
+  const DEBUG_ADDON = false;
   function setupMenu(div, data, opacity) {
     var menu = div.appendChild(document.createElement('div'));
     menu.style.position = 'fixed';
@@ -31,7 +33,7 @@
       event.preventDefault();
       event.stopPropagation();
       browser.runtime.sendMessage({ type: href }).then(res => {
-        console.log(res);
+        DEBUG_ADDON && console.log(res);
       });
     });
   }

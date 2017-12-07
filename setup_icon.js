@@ -1,20 +1,15 @@
 (function () {
-  const DEBUG_ADDON = true;
-  function setupIcon(iconId, emitMessage, data, listener) {
+  const DEBUG_ADDON = false;
+  function setupIcon(iconId, emitMessage, message, listener) {
     DEBUG_ADDON &&
-      console.log("self.port.on show", self);
-    DEBUG_ADDON &&
-      console.log("data", data);
+      console.log("message", message);
     var div = document.getElementById(iconId);
     if (div) {
       document.body.removeChild(div);
     }
     var efp = document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
     div = document.createElement('div');
-    // var lastStyle = window.getComputedStyle(document.body.firstChild);
     div.style.position = 'fixed';
-    // console.log(efp, window.getComputedStyle(efp));
-    // div.style.background = 'transparent';
     let bodyBC = 'white';
     let efpBC = 'transparent';
     if (document && 'body' in document) {
@@ -27,7 +22,7 @@
     div.style.width = '48px';
     div.style.height = '48px';
     div.style.fontSize = 'large';
-    div.style.backgroundImage = `url('${chrome.extension.getURL(data.icon)}')`;
+    div.style.backgroundImage = `url('${browser.extension.getURL(message.icon)}')`;
     div.style.borderRadius = '3px';
     div.style.borderColor = div.style.color;
     // div.style.border = '2px solid';
@@ -61,24 +56,17 @@
         div.style.opacity = 0.7;
       });
     };
-    browser.storage.local.get().then(res => {
+    browser.storage.local.get('position').then(res => {
       updateIconPosition(res);
     }).catch(err => {
-      console.log(err);
+      DEBUG_ADDON && console.log(err);
     });
-    // self.port.on('updateIconPosition', updateIconPosition);
     // NOTE Make sure to set element content before getting its client rect!
     DEBUG_ADDON &&
       console.log(div.getBoundingClientRect());
     div.addEventListener('click', listener || function (event) {
-        // console.log("selection", window.getSelection().toString());
-        event.preventDefault();
-        event.stopPropagation();
-        // if (this.children[0].style.display == 'none') {
-        //   this.children[0].style.display = 'inline-block';
-        // }
-        // else {
-        //   this.children[0].style.display = 'none';
+      event.preventDefault();
+      event.stopPropagation();
       if (this.firstElementChild.style.display == 'none') {
         if (event.clientX > window.innerWidth / 2) {
           this.firstElementChild.style.right = `${window.innerWidth - event.clientX}px`;
@@ -94,10 +82,10 @@
         }
         this.firstElementChild.style.display = 'inline-block';
       }
-        else {
-          this.firstElementChild.style.display = 'none';
-        }
-      });
+      else {
+        this.firstElementChild.style.display = 'none';
+      }
+    });
     let constrainClosestEdges = function(bcr) {
       let props = {};
       if (bcr.left + bcr.width / 2 > window.innerWidth / 2) {
@@ -112,7 +100,6 @@
       else {
         props.top = bcr.top;
       }
-	// reportError({bcr: bcr, props: props});
 	let updateStyle = function(element, props) {
 	    let keys = Object.keys(props);
 	    element.style.bottom = '';
@@ -178,9 +165,9 @@
         browser.storage.local.set({
           position: constrainClosestEdges(bcr)
         }).then(res => {
-          console.log(res);
+          DEBUG_ADDON && console.log(res);
         }).catch(err => {
-          console.log(err);
+          DEBUG_ADDON && console.log(err);
         })
       });
     }
@@ -200,9 +187,9 @@
         browser.storage.local.set({
           position: constrainClosestEdges(bcr)
         }).then(res => {
-          console.log(res);
+          DEBUG_ADDON && console.log(res);
         }).catch(err => {
-          console.log(err);
+          DEBUG_ADDON && console.log(err);
         })
       });
       div.addEventListener('touchmove', function (e) {
@@ -253,9 +240,9 @@
             height: this.style.height
           }
         }).then(res => {
-          console.log(res);
+          DEBUG_ADDON && console.log(res);
         }).catch(err => {
-          console.log(err);
+          DEBUG_ADDON && console.log(err);
         })
         // reportError({ 'mouseup': [ div.style.left, div.style.top ]});
         // }
