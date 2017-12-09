@@ -110,8 +110,8 @@
     if (true && "touch works on android too") {
       div.addEventListener('touchstart', function (e) {
         DEBUG_ADDON && console.log(e.type);
-        // e.preventDefault();
-        // e.stopPropagation();
+        e.preventDefault();
+        e.stopPropagation();
         // e.cancelBubble = true;
         div.style.transition = '';
       });
@@ -139,6 +139,8 @@
     }
     if (true && "mouse for desktop without touchscreen") {
       div.addEventListener('mousedown', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
         DEBUG_ADDON && console.log(e.type);
         div.style.transition = '';
       });
