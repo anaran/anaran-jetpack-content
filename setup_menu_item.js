@@ -24,14 +24,14 @@
     return menu;
   }
   function setupMenuItem(menu, href, text, listener) {
-    let item = menu.appendChild(document.createElement('div')).appendChild(document.createElement('a'));
-    item.style.display = 'inline-block';
+    let item = menu.appendChild(document.createElement('div'));
+    // item.style.display = 'inline-block';
     // item.style.marginInlineStart = '1rem';
     item.textContent = text;
-    item.href = href;
+    // item.href = href;
     item.addEventListener('click', listener || function (event) {
-      event.preventDefault();
-      event.stopPropagation();
+      // event.preventDefault();
+      // event.stopPropagation();
       browser.runtime.sendMessage({ type: href }).then(res => {
         DEBUG_ADDON && console.log(res);
       });
