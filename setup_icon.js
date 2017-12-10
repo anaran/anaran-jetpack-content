@@ -1,5 +1,5 @@
 (function () {
-  const DEBUG_ADDON = false;
+  const DEBUG_ADDON = true;
   function setupIcon(iconId, emitMessage, message, listener) {
     DEBUG_ADDON &&
       console.log("message", message);
@@ -55,29 +55,6 @@
     // NOTE Make sure to set element content before getting its client rect!
     DEBUG_ADDON &&
       console.log(div.getBoundingClientRect());
-    div.addEventListener('click', listener || function (event) {
-      DEBUG_ADDON && console.log(event.type);
-      event.preventDefault();
-      event.stopPropagation();
-      if (this.firstElementChild.style.display == 'none') {
-        if (event.clientX > window.innerWidth / 2) {
-          this.firstElementChild.style.right = `${window.innerWidth - event.clientX}px`;
-        }
-        else {
-          this.firstElementChild.style.left = `${event.clientX}px`;
-        }
-        if (event.clientY > window.innerHeight / 2) {
-          this.firstElementChild.style.bottom = `${window.innerHeight - event.clientY}px`;
-        }
-        else {
-          this.firstElementChild.style.top = `${event.clientY}px`;
-        }
-        this.firstElementChild.style.display = 'block';
-      }
-      else {
-        this.firstElementChild.style.display = 'none';
-      }
-    });
     let constrainClosestEdges = function(bcr) {
       let props = {};
       if (bcr.left + bcr.width / 2 > window.innerWidth / 2) {
@@ -106,48 +83,48 @@
 	updateStyle(div.firstElementChild, props);
       return props;
     };
+    div.addEventListener('click',  function (event) {
+      DEBUG_ADDON && console.log(event.type, this);
+      event.preventDefault();
+      event.stopPropagation();
+      if (this.firstElementChild.style.display == 'none') {
+        this.firstElementChild.style.display = 'block';
+        this.querySelector('span').style.display = 'none';
+      }
+      else {
+        this.firstElementChild.style.display = 'none';
+        this.querySelector('span').style.display = 'inline';
+      }
+      if (listener) {
+        listener(event);
+      }
+    });
     let moved = false;
     if (true && "touch works on android too") {
-      div.addEventListener('touchstart', function (e) {
-        DEBUG_ADDON && console.log(e.type);
-        e.preventDefault();
-        e.stopPropagation();
-        // e.cancelBubble = true;
+      div.addEventListener('touchstart', function (event) {
+        DEBUG_ADDON && console.log(event.type);
+        event.preventDefault();
+        event.stopPropagation();
         div.style.transition = '';
       });
-      div.addEventListener('touchend', function (e) {
-        DEBUG_ADDON && console.log(e.type);
-        // (e.currentTarget == div) && e.preventDefault();
-        // Can't get this.getBoundingClientRect() to return a non-empty object.
-        let bcr = new DOMRect();
-        bcr = div.getBoundingClientRect();
-        browser.storage.local.set({
-          position: constrainClosestEdges(bcr)
-        }).then(res => {
-          DEBUG_ADDON && console.log(res);
-        }).catch(err => {
-          DEBUG_ADDON && console.log(err);
-        });
-      });
-      div.addEventListener('touchmove', function (e) {
-        DEBUG_ADDON && console.log(e.type);
-        var touchX = e.touches[e.touches.length - 1].clientX;
-        var touchY = e.touches[e.touches.length - 1].clientY;
+      div.addEventListener('touchmove', function (event) {
+        DEBUG_ADDON && console.log(event.type);
+        event.preventDefault();
+        event.stopPropagation();
+          moved = true;
+        var touchX = event.touches[event.touches.length - 1].clientX;
+        var touchY = event.touches[event.touches.length - 1].clientY;
         div.style.left = (touchX - div.offsetWidth / 2) + 'px';
         div.style.top = (touchY - div.offsetHeight / 2) + 'px';
       });
-    }
-    if (true && "mouse for desktop without touchscreen") {
-      div.addEventListener('mousedown', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        DEBUG_ADDON && console.log(e.type);
-        div.style.transition = '';
-      });
-      div.addEventListener('mouseup', function (e) {
-        DEBUG_ADDON && console.log(e.type);
+      div.addEventListener('touchend', function (event) {
+        DEBUG_ADDON && console.log(event.type);
+        event.preventDefault();
+        event.stopPropagation();
+        // (event.currentTarget == div) && event.preventDefault();
+        // Can't get this.getBoundingClientRect() to return a non-empty object.
         let bcr = new DOMRect();
-        bcr = this.getBoundingClientRect();
+        bcr = div.getBoundingClientRect();
         if (moved) {
           div.firstElementChild.style.display = 'block';
           browser.storage.local.set({
@@ -157,16 +134,69 @@
           }).catch(err => {
             DEBUG_ADDON && console.log(err);
           });
+          // div.firstElementChild.style.display = 'none';
+        var touchX = event.changedTouches[event.changedTouches.length - 1].clientX;
+        var touchY = event.changedTouches[event.changedTouches.length - 1].clientY;
+          if (touchX > window.innerWidth / 2) {
+            this.firstElementChild.style.right = `${window.innerWidth - touchX}px`;
+          }
+          else {
+            this.firstElementChild.style.left = `${touchX}px`;
+          }
+          if (touchY > window.innerHeight / 2) {
+            this.firstElementChild.style.bottom = `${window.innerHeight - touchY}px`;
+          }
+          else {
+            this.firstElementChild.style.top = `${touchY}px`;
+          }
           moved = false;
         }
+        event.target.click();
       });
-      div.addEventListener('mousemove', function (e) {
-        DEBUG_ADDON && console.log(e.type, e);
-        if (e.buttons == 1 && (e.movementX || e.movementY)/* && e.currentTarget === move*/) {
+    }
+    if (true && "mouse for desktop without touchscreen") {
+      div.addEventListener('mousedown', function (event) {
+        // Avoid losing current text selection (used by fly menu entry).
+        event.preventDefault();
+        event.stopPropagation();
+        DEBUG_ADDON && console.log(event.type);
+        div.style.transition = '';
+      });
+      div.addEventListener('mousemove', function (event) {
+        DEBUG_ADDON && console.log(event.type, event);
+        if (event.buttons == 1 && (event.movementX || event.movementY)/* && event.currentTarget === move*/) {
           moved = true;
-          DEBUG_ADDON && console.log(e.movementX, e.movementY);
-          div.style.left = (e.clientX - div.offsetWidth / 2) + 'px';
-          div.style.top = (e.clientY - div.offsetHeight / 2) + 'px';
+          DEBUG_ADDON && console.log(event.movementX, event.movementY);
+          div.style.left = (event.clientX - div.offsetWidth / 2) + 'px';
+          div.style.top = (event.clientY - div.offsetHeight / 2) + 'px';
+        }
+      });
+      div.addEventListener('mouseup', function (event) {
+        DEBUG_ADDON && console.log(event.type);
+        let bcr = new DOMRect();
+        bcr = div.getBoundingClientRect();
+        if (moved) {
+          div.firstElementChild.style.display = 'block';
+          browser.storage.local.set({
+            position: constrainClosestEdges(bcr)
+          }).then(res => {
+            DEBUG_ADDON && console.log(res);
+          }).catch(err => {
+            DEBUG_ADDON && console.log(err);
+          });
+          if (event.clientX > window.innerWidth / 2) {
+            this.firstElementChild.style.right = `${window.innerWidth - event.clientX}px`;
+          }
+          else {
+            this.firstElementChild.style.left = `${event.clientX}px`;
+          }
+          if (event.clientY > window.innerHeight / 2) {
+            this.firstElementChild.style.bottom = `${window.innerHeight - event.clientY}px`;
+          }
+          else {
+            this.firstElementChild.style.top = `${event.clientY}px`;
+          }
+          moved = false;
         }
       });
     }

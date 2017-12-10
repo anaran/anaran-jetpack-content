@@ -50,6 +50,11 @@
             }
           ]
         };
+        const manifest = browser.runtime.getManifest();
+        document.getElementById('favicon').href
+          = browser.extension.getURL(manifest.icons["48"]);
+        let versionInfo = document.getElementById('version_info');
+        versionInfo.textContent = `${_('addon_title')} ${manifest.version}`;
         let applicationDescription = document.getElementById('application_description');
         // NOTE: Keep this first, before adding nodes to document.
         Array.prototype.forEach.call(document.querySelectorAll('div.settings'), function(setting) {
